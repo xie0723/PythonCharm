@@ -29,7 +29,7 @@ class Singleton:
     
     def __new__(cls, *args, **kwargs):
         if not cls.inst:
-            cls.inst = super(Singleton, cls).__new__(*args, **kwargs)
+            cls.inst = super().__new__(cls)
         
         return cls.inst
 
