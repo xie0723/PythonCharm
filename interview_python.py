@@ -38,23 +38,20 @@ date = '2018-01-01'
 assert re.sub('(\d{4})-(\d{2})-(\d{2})', r'\2/\3/\1', date) == '01/01/2018'
 
 
-
 # 5. 实现一个函数，把 CamelCase 字符串 用正则转化成 camel_case
 def convert(s):
     res = re.sub(r'(.)([A-Z][a-z]+)', r'\1_\2', s)
     return re.sub(r'([a-z])([A-Z])', r'\1_\2', res).lower()
 
 
-
 assert convert('CamelCase') == 'camel_case'
 assert convert('SimpleHTTPServer') == 'simple_http_server'
 
 # 6. 在slack中，存在uid和id的对应关系，如下面的变量 ID_NAMES 。通过Slack的API能获取聊天记录，但是内容用的是uid，请用正则表达式re.sub函数实现uid和id的转换
-ID_NAMES = {'U1EAT8MG9':'xiaoming', 'U0K1MF23Z':'laolin'}
+ID_NAMES = {'U1EAT8MG9': 'xiaoming', 'U0K1MF23Z': 'laolin'}
 s = '<@U1EAT8MG9>, <@U0K1MF23Z> 嗯 确实是这样的'
 
 exp = re.compile(r'\<@.*?\>')
-
 
 
 def id_to_name(match):
@@ -63,12 +60,10 @@ def id_to_name(match):
     return '@{}'.format(name) if name else content
 
 
-
 assert exp.sub(id_to_name, s) == '@xiaoming, @laolin 嗯 确实是这样的'
 
 # 7. 实现Fibonacci函数
 from functools import lru_cache
-
 
 
 @lru_cache(maxsize=None)
@@ -78,7 +73,6 @@ def fib(n):
     return fib(n - 1) + fib(n - 2)
 
 
-
 assert [fib(n) for n in range(16)] == [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610]
 
 # 8. 实现PYTHON版本的TREE
@@ -86,10 +80,9 @@ import os
 import argparse
 
 
-
 def tree(path, depth=1, level=0):
     items = os.listdir(path)
-    
+
     for item in items:
         if item.startswith('.'):
             continue
@@ -100,22 +93,19 @@ def tree(path, depth=1, level=0):
             tree(item, depth=depth, level=level + 1)
 
 
-
 # 9. 写一个装饰器inject，在__init__时自动给类注入参数
 def inject(func):
     def deco(*args, **kwargs):
         args[0].__dict__.update(kwargs)
         func(*args, **kwargs)
-    
-    return deco
 
+    return deco
 
 
 class A:
     @inject
     def __init__(self, x, y, z):
         pass
-
 
 
 a = A(x=4, y=5, z=6)
@@ -127,40 +117,35 @@ from time import time, sleep
 from contextlib import ContextDecorator
 
 
-
 class Timed:
     def __enter__(self):
         self.start = time()
         return self
-    
+
     def __exit__(self, type, value, traceback):
         self.end = time()
         cost = self.end - self.start
         print(f'Cost: {cost}')
-
 
 
 class Timed2(ContextDecorator):
     def __enter__(self):
         self.start = time()
         return self
-    
+
     def __exit__(self, type, value, traceback):
         self.end = time()
         cost = self.end - self.start
         print(f'Cost: {cost}')
 
 
-
 with Timed():
     sleep(2)
-
 
 
 @Timed2()
 def f():
     sleep(2)
-
 
 
 f()
@@ -169,30 +154,28 @@ f()
 from functools import reduce
 
 
-
 class Seq:
     def __init__(self, *items):
         self.items = items
-    
+
     def __repr__(self):
         return str(self.items)
-    
+
     def map(self, func):
         return self._evaluate(map, func)
-    
+
     def filter(self, func):
         return self._evaluate(filter, func)
-    
+
     def reduce(self, func):
         return self._evaluate(reduce, func)
-    
+
     def _evaluate(self, transform, func):
         rs = transform(func, self.items)
         if isinstance(rs, int):
             return rs
         self.items = list(rs)
         return self
-
 
 
 # Seq(1, 2, 3, 4).map(lambda x: x * 2) == [2, 4, 6, 8]
@@ -203,7 +186,6 @@ class Seq:
 
 def process():
     pass
-
 
 
 # with open("log.txt") as infile:
@@ -222,10 +204,8 @@ def process():
 #             process(line)
 
 
-
 # 13. 写一个生成素数的迭代器, 能迭代小于某数值以下的素数
 
-import math
 def is_prime(number):
     if number == 2:
         return True
@@ -237,15 +217,14 @@ def is_prime(number):
     return True
 
 
-
 class Prime:
     def __init__(self, max):
         self.max = max
         self.number = 2
-    
+
     def __iter__(self):
         return self
-    
+
     def __next__(self):
         while 1:
             number = self.number
@@ -256,13 +235,11 @@ class Prime:
                 return number
 
 
-
 assert list(Prime(30)) == [2, 3, 5, 7, 11, 13, 17, 19, 23, 29]
 
 # 14. 写一个生成素数的生成器, 但生成一定数量之后就会停止
 
 import math
-
 
 
 def prime(n):
@@ -280,13 +257,11 @@ def prime(n):
         number += 1
 
 
-
 assert list(prime(5)) == [2, 3, 5, 7, 11]
 
 # 15. 使用YIELD实现用轮转调度(ROUND-ROBIN)
 from collections import deque
 from itertools import cycle, islice
-
 
 
 # https://docs.python.org/3/library/itertools.html#itertools-recipes
@@ -303,7 +278,6 @@ def roundrobin(*iterables):
             nexts = cycle(islice(nexts, num_active))
 
 
-
 def roundrobin2(*iterables):
     num_active = len(iterables)
     q = deque(iter(it) for it in iterables)
@@ -316,13 +290,12 @@ def roundrobin2(*iterables):
             num_active -= 1
 
 
-
 assert list(roundrobin('ABC', 'D', 'EF')) == ['A', 'D', 'E', 'B', 'F', 'C']
 assert list(roundrobin2('ABC', 'D', 'EF')) == ['A', 'D', 'E', 'B', 'F', 'C']
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-            description='list contents of directories in a tree-like format.')
+        description='list contents of directories in a tree-like format.')
     parser.add_argument('-L', '--level', type=int,
                         help='Descend only level directories deep.')
     parser.add_argument('path', metavar='PATH', type=str,
@@ -347,7 +320,6 @@ session = requests.Session()
 URL = 'http://httpbin.org/get?a={}'
 
 
-
 def fetch():
     while 1:
         with sema:
@@ -358,7 +330,6 @@ def fetch():
             result = session.get(URL.format(value)).json()['args']['a']
             results_queue.put((name, result))
             sleep(uniform(0.1, 0.2))
-
 
 
 for i in range(10):
@@ -391,10 +362,9 @@ tasks_queue = JoinableQueue()
 TIMEOUT = 2
 
 event_map = {
-    0:event1,
-    1:event2
-    }
-
+    0: event1,
+    1: event2
+}
 
 
 def producer():
@@ -413,7 +383,6 @@ def producer():
     event1.set()
 
 
-
 def consumer(event):
     while 1:
         event_is_set = event.wait(TIMEOUT)
@@ -423,7 +392,6 @@ def consumer(event):
                 break
             print(f'{current_process().name}: {integer}')
             tasks_queue.task_done()
-
 
 
 processes = []
@@ -452,46 +420,44 @@ with codecs.open('stopwords.txt', encoding='gbk') as f:
     STOP_WORDS = set([line.strip() for line in f])
 
 
-
 class SimpleMapReduce:
-    
+
     def __init__(self, map_func, reduce_func, num_workers=None):
         self.map_func = map_func
         self.reduce_func = reduce_func
         self.pool = Pool(num_workers)
-    
+
     def partition(self, mapped_values):
         partitioned_data = collections.defaultdict(list)
         for key, value in mapped_values:
             partitioned_data[key].append(value)
         return partitioned_data.items()
-    
+
     def __call__(self, inputs, chunksize=1):
         map_responses = self.pool.map(
-                self.map_func,
-                inputs,
-                chunksize=chunksize,
-                )
+            self.map_func,
+            inputs,
+            chunksize=chunksize,
+        )
         partitioned_data = self.partition(
-                itertools.chain(*map_responses)
-                )
+            itertools.chain(*map_responses)
+        )
         reduced_values = self.pool.map(
-                self.reduce_func,
-                partitioned_data,
-                )
+            self.reduce_func,
+            partitioned_data,
+        )
         return reduced_values
-
 
 
 def file_to_words(filename):
     TR = str.maketrans({
-        p:' '
+        p: ' '
         for p in string.punctuation
-        })
-    
+    })
+
     print(f'{current_process().name} reading {filename}')
     output = []
-    
+
     with codecs.open(filename, encoding='gbk') as f:
         for line in f:
             if line.lstrip().startswith('..') or 'http' in line:
@@ -504,14 +470,12 @@ def file_to_words(filename):
     return output
 
 
-
 def count_words(item):
     """Convert the partitioned data for a word to a
     tuple containing the word and the number of occurences.
     """
     word, occurences = item
     return (word, sum(occurences))
-
 
 
 # 19. 使用多进程模块写一个使用优先级队列的例子
@@ -522,19 +486,15 @@ from multiprocessing import Process
 from multiprocessing.managers import BaseManager
 
 
-
 class Manager(BaseManager):
     pass
-
 
 
 Manager.register('PriorityQueue', PriorityQueue)
 
 
-
 def double(n):
     return n * 2
-
 
 
 def producer(q):
@@ -548,7 +508,6 @@ def producer(q):
         count += 1
 
 
-
 def consumer(q):
     while 1:
         if q.empty():
@@ -557,7 +516,6 @@ def consumer(q):
         print(f'[PRI:{pri}] {arg} * 2 = {task(arg)}')
         q.task_done()
         time.sleep(0.1)
-
 
 
 m = Manager()
@@ -581,19 +539,16 @@ from concurrent.futures import ThreadPoolExecutor
 NUMBERS = range(26, 32)
 
 
-
 def fib(n):
     if n <= 2:
         return 1
     return fib(n - 1) + fib(n - 2)
 
 
-
 def producer(futures, executor):
     for n in NUMBERS:
         r = executor.submit(fib, n)
         futures.append((r, n))
-
 
 
 def monitor(futures):
@@ -607,7 +562,6 @@ def monitor(futures):
                 futures.remove((f, n))
                 count += 1
         sleep(0.5)
-
 
 
 threads = []
@@ -625,18 +579,77 @@ for t in threads:
     t.join()
 
 
+# 21. 字典值通过点号访问实现
+class Dotable(dict):
+    __getattr__ = dict.__getitem__
+
+    def __init__(self, d):
+        super().__init__(d)
+        self.update(**dict((k, self.parse(v)) for k, v in d.items()))
+
+    @classmethod
+    def parse(cls, v):
+        if isinstance(v, dict):
+            return cls(v)
+        elif isinstance(v, list):
+            return [cls.parse(i) for i in v]
+        else:
+            return v
+
+
+# 22. 异步生成器
+import asyncio
+
+
+async def fetch():
+    async with ClientSession as session:
+        for i in range(10):
+            url = f'http://httpbin.org/get?a={i}'
+            async with session.get(url) as response:
+                r = await response.json()
+                yield r.get('args').get('a')
+
+
+async def main():
+    async for rs in fetch():
+        print(rs)
+
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(main())
+
+# 23. 写一个异步列表解析式
+import asyncio
+from aiohttp import ClientSession
+
+
+async def fetch():
+    async with ClientSession as session:
+        for i in range(10):
+            url = f'http://httpbin.org/get?a={i}'
+            async with session.get(url) as response:
+                r = await response.json()
+                yield r.get('args').get('a')
+
+
+async def main():
+    print([rs async for rs in fetch()])
+
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(main())
 
 if __name__ == '__main__':
     import glob
     import operator
-    
+
     input_files = glob.glob('novels/*.txt')
-    
+
     mapper = SimpleMapReduce(file_to_words, count_words)
     word_counts = mapper(input_files)
     word_counts.sort(key=operator.itemgetter(1))
     word_counts.reverse()
-    
+
     print('\n金庸最爱说：😉\n')
     top10 = word_counts[:10]
     longest = max(len(word) for word, count in top10)
