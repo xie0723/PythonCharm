@@ -188,20 +188,20 @@ def process():
     pass
 
 
-# with open("log.txt") as infile:
-#     for line in infile:
-#         process(line)
-#
-# # 或者
-# bufsize = 65536
-#
-# with open('path') as f:
-#     while 1:
-#         lines = f.readlines(bufsize)
-#         if not lines:
-#             break
-#         for line in lines:
-#             process(line)
+with open("log.txt") as infile:
+    for line in infile:
+        process(line)
+
+# 或者
+bufsize = 65536
+
+with open('path') as f:
+    while 1:
+        lines = f.readlines(bufsize)
+        if not lines:
+            break
+        for line in lines:
+            process(line)
 
 
 # 13. 写一个生成素数的迭代器, 能迭代小于某数值以下的素数
@@ -638,6 +638,32 @@ async def main():
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(main())
+
+
+
+
+# 24 . 字典value值通过dot.号访问
+class DotDict(dict):
+
+    __getattr__ = dict.__getitem__
+
+    def __init__(self, d):
+        super().__init__(d)
+        self.update(**dict((k, self.parse(v))
+                           for k, v in d.items()))
+
+    @classmethod
+    def parse(cls, v):
+        if isinstance(v, dict):
+            return cls(v)
+        elif isinstance(v, list):
+            return [cls.parse(i) for i in v]
+        else:
+            return v
+
+
+
+
 
 if __name__ == '__main__':
     import glob

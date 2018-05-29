@@ -29,14 +29,15 @@ class Singleton:
     
     def __new__(cls, *args, **kwargs):
         if not cls.inst:
-            cls.inst = super().__new__(cls)
+            cls.inst = super().__new__(cls,*args,**kwargs)
         
         return cls.inst
 
 
 
 @singleton
-class Base: pass
+class Base:
+    pass
 
 
 
