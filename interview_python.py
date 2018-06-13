@@ -644,14 +644,20 @@ loop.run_until_complete(main())
 
 # 24 . 字典value值通过dot.号访问
 class DotDict(dict):
-
+    """
+    特殊字典，通过.号访问值
+    Example：
+        Map = {'a': {'b': [{'c': 2},3]}}
+        d = DotDict(Map)
+        print(d.a.b[0]) == {'c': 2}
+    """
     __getattr__ = dict.__getitem__
-
+    __setattr__ = dict.__setitem__
+    
     def __init__(self, d):
         super().__init__(d)
-        self.update(**dict((k, self.parse(v))
-                           for k, v in d.items()))
-
+        self.update(**dict((k, self.parse(v)) for k, v in d.items()))
+    
     @classmethod
     def parse(cls, v):
         if isinstance(v, dict):
@@ -660,7 +666,9 @@ class DotDict(dict):
             return [cls.parse(i) for i in v]
         else:
             return v
-
+    
+    def __call__(self, **kwargs):
+        return self.update(**dict((k, self.parse(v)) for k, v in kwargs.items()))
 
 
 
