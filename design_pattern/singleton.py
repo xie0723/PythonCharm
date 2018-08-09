@@ -6,8 +6,7 @@ from functools import wraps
 
 
 
-# 装饰器模式
-
+# 1 装饰器模式
 def singleton(cls):
     inst = None
     
@@ -22,14 +21,13 @@ def singleton(cls):
 
 
 
-# 基类
-
+# 2 基类
 class Singleton:
     inst = None
     
     def __new__(cls, *args, **kwargs):
         if not cls.inst:
-            cls.inst = super().__new__(cls,*args,**kwargs)
+            cls.inst = super().__new__(cls, *args, **kwargs)
         
         return cls.inst
 
