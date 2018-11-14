@@ -82,7 +82,7 @@ import argparse
 
 def tree(path, depth=1, level=0):
     items = os.listdir(path)
-
+    
     for item in items:
         if item.startswith('.'):
             continue
@@ -98,7 +98,7 @@ def inject(func):
     def deco(*args, **kwargs):
         args[0].__dict__.update(kwargs)
         func(*args, **kwargs)
-
+    
     return deco
 
 
@@ -121,7 +121,7 @@ class Timed:
     def __enter__(self):
         self.start = time()
         return self
-
+    
     def __exit__(self, type, value, traceback):
         self.end = time()
         cost = self.end - self.start
@@ -132,7 +132,7 @@ class Timed2(ContextDecorator):
     def __enter__(self):
         self.start = time()
         return self
-
+    
     def __exit__(self, type, value, traceback):
         self.end = time()
         cost = self.end - self.start
@@ -157,19 +157,19 @@ from functools import reduce
 class Seq:
     def __init__(self, *items):
         self.items = items
-
+    
     def __repr__(self):
         return str(self.items)
-
+    
     def map(self, func):
         return self._evaluate(map, func)
-
+    
     def filter(self, func):
         return self._evaluate(filter, func)
-
+    
     def reduce(self, func):
         return self._evaluate(reduce, func)
-
+    
     def _evaluate(self, transform, func):
         rs = transform(func, self.items)
         if isinstance(rs, int):
@@ -221,10 +221,10 @@ class Prime:
     def __init__(self, max):
         self.max = max
         self.number = 2
-
+    
     def __iter__(self):
         return self
-
+    
     def __next__(self):
         while 1:
             number = self.number
@@ -295,7 +295,7 @@ assert list(roundrobin2('ABC', 'D', 'EF')) == ['A', 'D', 'E', 'B', 'F', 'C']
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-        description='list contents of directories in a tree-like format.')
+            description='list contents of directories in a tree-like format.')
     parser.add_argument('-L', '--level', type=int,
                         help='Descend only level directories deep.')
     parser.add_argument('path', metavar='PATH', type=str,
@@ -364,7 +364,7 @@ TIMEOUT = 2
 event_map = {
     0: event1,
     1: event2
-}
+    }
 
 
 def producer():
@@ -421,31 +421,31 @@ with codecs.open('stopwords.txt', encoding='gbk') as f:
 
 
 class SimpleMapReduce:
-
+    
     def __init__(self, map_func, reduce_func, num_workers=None):
         self.map_func = map_func
         self.reduce_func = reduce_func
         self.pool = Pool(num_workers)
-
+    
     def partition(self, mapped_values):
         partitioned_data = collections.defaultdict(list)
         for key, value in mapped_values:
             partitioned_data[key].append(value)
         return partitioned_data.items()
-
+    
     def __call__(self, inputs, chunksize=1):
         map_responses = self.pool.map(
-            self.map_func,
-            inputs,
-            chunksize=chunksize,
-        )
+                self.map_func,
+                inputs,
+                chunksize=chunksize,
+                )
         partitioned_data = self.partition(
-            itertools.chain(*map_responses)
-        )
+                itertools.chain(*map_responses)
+                )
         reduced_values = self.pool.map(
-            self.reduce_func,
-            partitioned_data,
-        )
+                self.reduce_func,
+                partitioned_data,
+                )
         return reduced_values
 
 
@@ -453,11 +453,11 @@ def file_to_words(filename):
     TR = str.maketrans({
         p: ' '
         for p in string.punctuation
-    })
-
+        })
+    
     print(f'{current_process().name} reading {filename}')
     output = []
-
+    
     with codecs.open(filename, encoding='gbk') as f:
         for line in f:
             if line.lstrip().startswith('..') or 'http' in line:
@@ -582,11 +582,11 @@ for t in threads:
 # 21. 字典值通过点号访问实现
 class Dotable(dict):
     __getattr__ = dict.__getitem__
-
+    
     def __init__(self, d):
         super().__init__(d)
         self.update(**dict((k, self.parse(v)) for k, v in d.items()))
-
+    
     @classmethod
     def parse(cls, v):
         if isinstance(v, dict):
@@ -640,8 +640,6 @@ loop = asyncio.get_event_loop()
 loop.run_until_complete(main())
 
 
-
-
 # 24 . 字典value值通过dot.号访问
 class DotDict(dict):
     """
@@ -671,9 +669,10 @@ class DotDict(dict):
         return self.update(**dict((k, self.parse(v)) for k, v in kwargs.items()))
 
 
-
 # 25 获取本机IP
 import socket
+
+
 def get_ip():
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -684,17 +683,48 @@ def get_ip():
     return ip
 
 
+#  基于时间过期的LRU缓存
+from datetime import datetime, timedelta
+from functools import lru_cache, wraps
+
+
+def time_cached(maxsize=None, **timedelta_kwargs):
+    """
+    基于时间过期的LRU缓存
+    `timedelta_kwargs`:
+        days=0, seconds=0, microseconds=0, milliseconds=0, minutes=0, hours=0, weeks=0
+    """
+    
+    def _wrapper(f):
+        update_delta = timedelta(**timedelta_kwargs)
+        next_update = datetime.utcnow() - update_delta
+        f = lru_cache(maxsize)(f)
+        
+        @wraps(f)
+        def _wrapped(*args, **kwargs):
+            nonlocal next_update
+            now = datetime.utcnow()
+            if now >= next_update:
+                f.cache_clear()
+                next_update = now + update_delta
+            return f(*args, **kwargs)
+        
+        return _wrapped
+    
+    return _wrapper
+
+
 if __name__ == '__main__':
     import glob
     import operator
-
+    
     input_files = glob.glob('novels/*.txt')
-
+    
     mapper = SimpleMapReduce(file_to_words, count_words)
     word_counts = mapper(input_files)
     word_counts.sort(key=operator.itemgetter(1))
     word_counts.reverse()
-
+    
     print('\n金庸最爱说：😉\n')
     top10 = word_counts[:10]
     longest = max(len(word) for word, count in top10)
