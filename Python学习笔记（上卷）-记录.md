@@ -40,6 +40,8 @@
 33. \__setattr__:拦截对任何属性的赋值操作
 34. \__delattr__： 拦截对任何属性的删除操作。
 35. \__getattribute__: 拦截任何实例属性的访问。
+    (Stack Overflow)[python -m pip install 'python-language-server[all]'
+Install InstructionsDownload Python]
 36. 常见的错误处理方式有两类：一类是返回错误码，由调用方决定如何处理;另一类是以专用语句保护代码块，当异常发生时，跳转到指定的处理单元。前者有较好的性能，而后者可分离正常逻辑与故障处理代码。
 37. 异常对象被保存在当前线程状态里，可用sys.exc_info 获取当前错误堆栈信息。
 38. 当用try保护代码时，异常一旦发生，立即跳出当前try代码块进入到except 异常处理流程。
